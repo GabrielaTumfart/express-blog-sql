@@ -41,7 +41,7 @@ function show(req, res) {
   };
   res.json(responseData);
 }
-// Milestone 3 inizia qui:
+
 // Store - POST /posts/ - Creazione di un nuovo post
 function store(req, res) {
   console.log(req.body);
@@ -109,10 +109,29 @@ function modify(req, res) {
   res.json(responseData);
 }
 
-// Destroy - DELETE /posts/:id - Eliminazione di un post
+// Destroy - DELETE /posts/:id - Eliminazione di un post dal database
 function destroy(req, res) {
   const postId = parseInt(req.params.id);
-  const post = posts.find((post) => post.id === postId);
+  const sql = 'DELETE FROM posts WHERE id = ?';
+
+  connection.query(sql, [postId], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Errore durante l'eliminazione del post",
+        success: false,
+      });
+    }
+  if (results.affectedRows === 0) {
+    return res.status(404).json({
+      message: `Errore 404 - Post ${postId} non trovato`,
+      success: false,
+    });
+  }
+  res.status(204).send();
+   });
+  }
+
+
 
   // BONUS - Se il post non esiste risponde con errore 404
   if (!post) {
