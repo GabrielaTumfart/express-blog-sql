@@ -1,14 +1,24 @@
-let posts = require("../data/posts");
+// controllers/postsController.js
+const connection = require("../data/db");
 
-// Index - GET /posts/ - Restituisce la lista di tutti i post in formato JSON
+// Index - GET /posts/ - Restituisce la lista di tutti i post dal database
 function index(req, res) {
-  //throw new Error("Custom error");
-  const responseData = {
-    result: posts,
-    message: "Lista dei post di Gabriela",
-    success: true,
-  };
-  res.json(responseData);
+  const sql = "SELECT * FROM posts";
+
+  connection.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Errore nel recupero dei post",
+        success: false,
+      });
+    }
+
+    res.json({
+      message: "Lista dei post di Gabriela",
+      success: true,
+      result: results,
+    });
+  });
 }
 
 // Show - GET /posts/:id - Restituisce un singolo post in formato JSON
